@@ -68,6 +68,12 @@ Internal parameters are hard-coded in the library usually as enumerations and ha
 * [isOff()](#visibility)
 * [isBlinking()](#blinking)
 * [isPatterned()](#blinking)
+* [getStatusOn()](#getStatusFlags)
+* [getStatusOff()](#getStatusFlags)
+* [getStatus()](#getStatus)
+
+### Setters
+* [setAbility()](#setAbility)
 
 
 <a id="gbj_appled_esp"></a>
@@ -203,6 +209,32 @@ None
 None
 
 #### See also
+[begin()](#begin)
+
+[Back to interface](#interface)
+
+
+<a id="setAbility"></a>
+
+## setAbility()
+
+#### Description
+The method sets ability of the led by the value of input argument. It is a setter for the input argument of the method [begin](#begin).
+
+#### Syntax
+    void setAbility(bool enabled)
+
+#### Parameters
+* **enabled**: Flag defining the ability of an LED. If disabled, the led is ignored entirely and never lits.
+  * *Valid values*: true or false
+  * *Default value*: none
+
+#### Returns
+None
+
+#### See also
+[isEnabled(), isDisabled()](#ability)
+
 [begin()](#begin)
 
 [Back to interface](#interface)
@@ -391,5 +423,53 @@ If the led is blocked, the method always returs false flag.
 [blink(), blinkHurry(), blinkFast()](#blink)
 
 [blinkPattern()](#pattern)
+
+[Back to interface](#interface)
+
+
+<a id="getStatusFlags"></a>
+
+## getStatusOn(), getStatusOff()
+
+#### Description
+The particular getter returns textual flag representing enabled or disabled state of the led.
+* The enabled led state is represented with the string "ON".
+* The disabled led state is represented with the string "OFF".
+
+#### Syntax
+    String getStatusOn()
+    String getStatusOff()
+    String getStatus()
+
+#### Parameters
+None
+
+#### Returns
+Textual flag representing enabled or disabled led state.
+
+#### See also
+[getStatus()](#getStatus)
+
+[Back to interface](#interface)
+
+
+<a id="getStatus"></a>
+
+## getStatus()
+
+#### Description
+The getter returns textual representation of the current led's state, i.e., flag about its availability.
+
+#### Syntax
+    String getStatus()
+
+#### Parameters
+None
+
+#### Returns
+Textual flag representing current led state.
+
+#### See also
+[getStatusOn(), getStatusOff()](#getStatusFlags)
 
 [Back to interface](#interface)
