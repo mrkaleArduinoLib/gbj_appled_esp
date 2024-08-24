@@ -58,7 +58,7 @@ public:
     is suitable at ESP8266-01, where builtin led is connected to serial TX pin,
     so that the using led and serial monitor at once is not possible.
       - Data type: boolean
-      - Default value: true (preferrably for ESP8266, ESP32)
+      - Default value: false (preferrably for ESP8266, ESP32)
       - Limited range: true, false
 
     RETURN: object
