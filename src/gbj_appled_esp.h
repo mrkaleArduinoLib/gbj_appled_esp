@@ -19,12 +19,11 @@
 #ifndef GBJ_APPLED_ESP_H
 #define GBJ_APPLED_ESP_H
 
+#include <Arduino.h>
 #if defined(ESP8266)
   #define USING_TIM_DIV256 true
-  #include <Arduino.h>
   #include <ESP8266TimerInterrupt.h>
 #elif defined(ESP32)
-  #include <Arduino.h>
   #include <ESP32_New_TimerInterrupt.h>
 #else
   #error !!! Only ESP8266/ESP32 are supported !!!
@@ -36,7 +35,11 @@
 class gbj_appled_esp
 {
 public:
+#if defined(ESP8266)
   typedef void (*func_t)();
+#elif defined(ESP32)
+  typedef bool (*func_t)(void *);
+#endif
 
   /*
     Constructor
@@ -64,8 +67,8 @@ public:
     RETURN: object
   */
   inline gbj_appled_esp(byte pinLed = LED_BUILTIN,
-                    bool reverse = true,
-                    bool block = false)
+                        bool reverse = true,
+                        bool block = false)
   {
     pin_ = pinLed;
     blocked_ = block;
@@ -79,7 +82,11 @@ public:
       ON = HIGH;
       OFF = LOW;
     }
+#if defined(ESP8266)
     timer_ = new ESP8266Timer();
+#elif defined(ESP32)
+    timer_ = new ESP32Timer(0);
+#endif
   }
 
   /*
@@ -98,7 +105,11 @@ public:
 
     RETURN: None
   */
+#if defined(ESP8266)
   inline void begin(void (*isr)(), bool enabled = true)
+#elif defined(ESP32)
+  inline void begin(bool (*isr)(void *timer), bool enabled = true)
+#endif
   {
     isr_ = isr;
     if (isFree())
@@ -138,7 +149,6 @@ public:
         off();
         break;
     }
-    setPeriod(Timing::PERIOD_NORMAL);
   }
   inline void disable()
   {
@@ -151,7 +161,10 @@ public:
     {
       if (isFree())
       {
-        timer_->stopTimer();
+        if (init_)
+        {
+          timer_->stopTimer();
+        }
         digitalWrite(pin_, ON);
       }
       mode_ = Modus::MODE_ON;
@@ -165,7 +178,10 @@ public:
   {
     if (isFree())
     {
-      timer_->stopTimer();
+      if (init_)
+      {
+        timer_->stopTimer();
+      }
       digitalWrite(pin_, OFF);
     }
   }
@@ -294,17 +310,27 @@ private:
     MODE_FAST,
     MODE_PATTERN,
   };
+#if defined(ESP8266)
   ESP8266Timer *timer_;
+#elif defined(ESP32)
+  ESP32Timer *timer_;
+#endif
   func_t isr_;
   Modus mode_;
   byte ON, OFF;
   byte pin_, blinks_, counter_;
-  bool blocked_, enabled_, halted_;
+  bool blocked_, enabled_, halted_, init_;
 
   inline void setPeriod(unsigned long period)
   {
+#if defined(ESP8266)
     timer_->setInterval(period, isr_);
     timer_->restartTimer();
+#elif defined(ESP32)
+    timer_->setInterval(period, isr_);
+    timer_->restartTimer();
+    init_ = true;
+#endif
   }
   inline void blinkLed(unsigned long period)
   {
